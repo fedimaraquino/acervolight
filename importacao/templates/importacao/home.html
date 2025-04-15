@@ -1,0 +1,71 @@
+{% extends 'importacao/base.html' %}
+
+{% block header %}Estatísticas de Dados Importados{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Livros</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ livro_count }}</h5>
+                <p class="card-text">registros</p>
+                <a href="{% url 'importacao:livro_list' %}" class="btn btn-light">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Seções</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ secao_count }}</h5>
+                <p class="card-text">registros</p>
+                <a href="{% url 'importacao:secao_list' %}" class="btn btn-light">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">CDD</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cdd_count }}</h5>
+                <p class="card-text">registros</p>
+                <a href="{% url 'importacao:cdd_list' %}" class="btn btn-light">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">CDU</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cdu_count }}</h5>
+                <p class="card-text">registros</p>
+                <a href="{% url 'importacao:cdu_list' %}" class="btn btn-light">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Cutter</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ cutter_count }}</h5>
+                <p class="card-text">registros</p>
+                <a href="{% url 'importacao:cutter_list' %}" class="btn btn-light">Ver detalhes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-5">
+    <h2>Como Visualizar os Dados</h2>
+    <p>Para visualizar os dados importados, você pode:</p>
+    <ul>
+        <li>Clicar em um dos links acima para ver os registros de cada tabela</li>
+        <li>Usar o sistema de busca para encontrar registros específicos</li>
+        <li>Acessar a <a href="/admin/" class="text-decoration-none">interface de administração</a> (requer login)</li>
+    </ul>
+</div>
+{% endblock %} 

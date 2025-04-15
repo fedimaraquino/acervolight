@@ -1,0 +1,71 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main  # ou master, dependendo da sua branch principal
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run tests
+        run: |
+          python manage.py test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Deploy para Heroku
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          procfile: "web: gunicorn biblioteca.wsgi --log-file -"
+
+      # Ou deploy para outro provedor (exemplo: Railway)
+      # - name: Deploy to Railway
+      #   uses: bervProject/railway-deploy@main
+      #   with:
+      #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
+      #     service: ${{ secrets.RAILWAY_SERVICE_NAME }}
+
+      # Ou deploy para Digital Ocean App Platform
+      # - name: Deploy to Digital Ocean
+      #   uses: digitalocean/app_action@v2
+      #   with:
+      #     app_name: ${{ secrets.DIGITALOCEAN_APP_NAME }}
+      #     token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      #     images: |
+      #       [
+      #         {
+      #           "name": "django-app",
+      #           "image":{
+      #             "registry_type": "GITHUB",
+      #             "repository": "${{ github.repository }}",
+      #             "tag": "${{ github.sha }}"
+      #           }
+      #         }
+      #       ] 

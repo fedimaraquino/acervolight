@@ -1,0 +1,238 @@
+{% extends 'importacao/base.html' %}
+
+{% block title %}Livros - {{ block.super }}{% endblock %}
+
+{% block header %}
+    <div class="d-flex align-items-center">
+        <span>Lista de Livros</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#colunasModal" title="Personalizar colunas">
+            <i class="bi bi-gear"></i>
+        </button>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <form method="get" class="row g-3">
+        <div class="col-auto">
+            <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Buscar por título, autor ou editora">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+        {% if query %}
+        <div class="col-auto">
+            <a href="{% url 'importacao:livro_list' %}" class="btn btn-outline-secondary">Limpar</a>
+        </div>
+        {% endif %}
+    </form>
+    <div>
+        <a href="{% url 'importacao:livro_create' %}" class="btn btn-success">Novo Livro</a>
+    </div>
+</div>
+
+<div class="mb-3">
+    <p>Total: {{ page_obj.paginator.count }} livros</p>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                {% if 'titulo' in colunas_selecionadas %}<th>Título</th>{% endif %}
+                {% if 'autor' in colunas_selecionadas %}<th>Autor</th>{% endif %}
+                {% if 'ano_publicacao' in colunas_selecionadas %}<th>Ano</th>{% endif %}
+                {% if 'editora' in colunas_selecionadas %}<th>Editora</th>{% endif %}
+                {% if 'secao' in colunas_selecionadas %}<th>Seção</th>{% endif %}
+                {% if 'cdd' in colunas_selecionadas %}<th>CDD</th>{% endif %}
+                {% if 'cdu' in colunas_selecionadas %}<th>CDU</th>{% endif %}
+                {% if 'cutter' in colunas_selecionadas %}<th>Cutter</th>{% endif %}
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for livro in page_obj %}
+            <tr>
+                {% if 'titulo' in colunas_selecionadas %}<td>{{ livro.titulo }}</td>{% endif %}
+                {% if 'autor' in colunas_selecionadas %}<td>{{ livro.autor }}</td>{% endif %}
+                {% if 'ano_publicacao' in colunas_selecionadas %}<td>{{ livro.ano_publicacao }}</td>{% endif %}
+                {% if 'editora' in colunas_selecionadas %}<td>{{ livro.editora }}</td>{% endif %}
+                {% if 'secao' in colunas_selecionadas %}<td>{{ livro.secao.nome|default:"-" }}</td>{% endif %}
+                {% if 'cdd' in colunas_selecionadas %}<td>{{ livro.cdd.codigo|default:"-" }}</td>{% endif %}
+                {% if 'cdu' in colunas_selecionadas %}<td>{{ livro.cdu.codigo|default:"-" }}</td>{% endif %}
+                {% if 'cutter' in colunas_selecionadas %}
+                <td>
+                    {% if livro.cutter %}
+                        {% if livro.autor %}
+                            {% with sobrenome=livro.autor.split|last %}
+                            <span class="fw-bold">{{ livro.autor_sobrenome_inicial }}</span>{{ livro.cutter.codigo|cut:" " }}
+                            {% endwith %}
+                        {% else %}
+                            {{ livro.cutter.codigo|cut:" " }}
+                        {% endif %}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                {% endif %}
+                <td>
+                    <a href="{% url 'importacao:livro_update' livro.id %}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="{% url 'importacao:livro_delete' livro.id %}" class="btn btn-sm btn-danger">Excluir</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="{{ colunas_selecionadas|length|add:1 }}" class="text-center">Nenhum livro encontrado</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav aria-label="Paginação">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page=1">&laquo; Primeira</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#">&laquo; Primeira</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" href="#">Anterior</a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ num }}">{{ num }}</a>
+            </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ num }}">{{ num }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Próxima</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#">Próxima</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" href="#">Última &raquo;</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Modal para personalização de colunas -->
+<div class="modal fade" id="colunasModal" tabindex="-1" aria-labelledby="colunasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="salvar_colunas" value="1">
+                
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="colunasModalLabel">
+                        <i class="bi bi-layout-three-columns me-2"></i>Personalizar Colunas
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+                    <p class="text-muted">Selecione as colunas que deseja exibir na listagem de livros:</p>
+                    
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="titulo" id="col_titulo" 
+                                    {% if 'titulo' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_titulo">Título</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="autor" id="col_autor"
+                                    {% if 'autor' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_autor">Autor</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="ano_publicacao" id="col_ano"
+                                    {% if 'ano_publicacao' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_ano">Ano de Publicação</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="editora" id="col_editora"
+                                    {% if 'editora' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_editora">Editora</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-6">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="secao" id="col_secao"
+                                    {% if 'secao' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_secao">Seção</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="cdd" id="col_cdd"
+                                    {% if 'cdd' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_cdd">CDD</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="cdu" id="col_cdu"
+                                    {% if 'cdu' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_cdu">CDU</label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="colunas" value="cutter" id="col_cutter"
+                                    {% if 'cutter' in colunas_selecionadas %}checked{% endif %}>
+                                <label class="form-check-label" for="col_cutter">Cutter</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Salvar Configuração
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Garantir que pelo menos uma coluna esteja selecionada
+    document.querySelector('form[name="salvar_colunas"]')?.addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[name="colunas"]:checked');
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alert('Selecione pelo menos uma coluna para exibir.');
+        }
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,444 @@
+{% extends 'importacao/base.html' %}
+
+{% block title %}Alunos - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-4">
+        <i class="bi bi-people-fill me-2"></i>Alunos
+    </h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="d-flex">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar alunos..." value="{{ query|default:'' }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#colunasModal">
+                <i class="bi bi-layout-three-columns me-1"></i>Personalizar Colunas
+            </button>
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#filtrosModal">
+                <i class="bi bi-funnel me-1"></i>Filtros
+            </button>
+        </div>
+    </div>
+    
+    {% if query or genero_filter or raca_filter %}
+    <div class="alert alert-info">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <i class="bi bi-info-circle me-2"></i>Filtros aplicados:
+                {% if query %}<span class="badge bg-secondary me-2">Busca: {{ query }}</span>{% endif %}
+                {% if genero_filter %}
+                    <span class="badge bg-primary me-2">Gênero: 
+                    {% for key, value in generos_disponiveis %}
+                        {% if key == genero_filter %}{{ value }}{% endif %}
+                    {% endfor %}
+                    </span>
+                {% endif %}
+                {% if raca_filter %}
+                    <span class="badge bg-dark me-2">Raça/Cor: 
+                    {% for key, value in racas_disponiveis %}
+                        {% if key == raca_filter %}{{ value }}{% endif %}
+                    {% endfor %}
+                    </span>
+                {% endif %}
+            </div>
+            <a href="{% url 'importacao:aluno_list' %}" class="btn btn-sm btn-outline-info">Limpar Filtros</a>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-sm">
+            <thead class="table-dark">
+                <tr>
+                    {% if 'nome' in colunas_selecionadas %}
+                    <th>Nome</th>
+                    {% endif %}
+                    
+                    {% if 'cpf' in colunas_selecionadas %}
+                    <th>CPF</th>
+                    {% endif %}
+                    
+                    {% if 'dt_nascimento' in colunas_selecionadas %}
+                    <th>Data de Nascimento</th>
+                    {% endif %}
+                    
+                    {% if 'genero' in colunas_selecionadas %}
+                    <th>Gênero</th>
+                    {% endif %}
+                    
+                    {% if 'raca' in colunas_selecionadas %}
+                    <th>Raça/Cor</th>
+                    {% endif %}
+                    
+                    {% if 'turma' in colunas_selecionadas %}
+                    <th>Turma</th>
+                    {% endif %}
+                    
+                    {% if 'serie' in colunas_selecionadas %}
+                    <th>Série</th>
+                    {% endif %}
+                    
+                    {% if 'ano' in colunas_selecionadas %}
+                    <th>Ano Letivo</th>
+                    {% endif %}
+                    
+                    {% if 'cidade' in colunas_selecionadas %}
+                    <th>Cidade</th>
+                    {% endif %}
+                    
+                    {% if 'uf' in colunas_selecionadas %}
+                    <th>UF</th>
+                    {% endif %}
+                    
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in page_obj %}
+                <tr>
+                    {% if 'nome' in colunas_selecionadas %}
+                    <td>{{ aluno.nome }}</td>
+                    {% endif %}
+                    
+                    {% if 'cpf' in colunas_selecionadas %}
+                    <td>{{ aluno.cpf|default:"-" }}</td>
+                    {% endif %}
+                    
+                    {% if 'dt_nascimento' in colunas_selecionadas %}
+                    <td>{{ aluno.dt_nascimento|date:"d/m/Y"|default:"-" }}</td>
+                    {% endif %}
+                    
+                    {% if 'genero' in colunas_selecionadas %}
+                    <td>
+                        {% if aluno.genero == 'M' %}
+                        <span class="badge bg-primary">Masculino</span>
+                        {% elif aluno.genero == 'F' %}
+                        <span class="badge bg-danger">Feminino</span>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                    
+                    {% if 'raca' in colunas_selecionadas %}
+                    <td>
+                        <span class="badge bg-dark">{{ aluno.raca|default:"-" }}</span>
+                    </td>
+                    {% endif %}
+                    
+                    {% if 'turma' in colunas_selecionadas %}
+                    <td>{{ aluno.turma|default:"-" }}</td>
+                    {% endif %}
+                    
+                    {% if 'serie' in colunas_selecionadas %}
+                    <td>{{ aluno.serie|default:"-" }}</td>
+                    {% endif %}
+                    
+                    {% if 'ano' in colunas_selecionadas %}
+                    <td>{{ aluno.ano|default:"-" }}</td>
+                    {% endif %}
+                    
+                    {% if 'cidade' in colunas_selecionadas %}
+                    <td>{{ aluno.cidade|default:"-" }}</td>
+                    {% endif %}
+                    
+                    {% if 'uf' in colunas_selecionadas %}
+                    <td>{{ aluno.uf|default:"-" }}</td>
+                    {% endif %}
+                    
+                    <td>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalheModal{{ aluno.id }}">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+                
+                <!-- Modal de Detalhes -->
+                <div class="modal fade" id="detalheModal{{ aluno.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-info text-white">
+                                <h5 class="modal-title">
+                                    <i class="bi bi-person-badge me-2"></i>Detalhes do Aluno
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <h4 class="border-bottom pb-2">Dados Pessoais</h4>
+                                        <p><strong>Nome:</strong> {{ aluno.nome }}</p>
+                                        <p><strong>CPF:</strong> {{ aluno.cpf|default:"Não informado" }}</p>
+                                        <p><strong>Data de Nascimento:</strong> {{ aluno.dt_nascimento|date:"d/m/Y"|default:"Não informado" }}</p>
+                                        <p><strong>Gênero:</strong> 
+                                            {% if aluno.genero == 'M' %}Masculino
+                                            {% elif aluno.genero == 'F' %}Feminino
+                                            {% else %}Não informado{% endif %}
+                                        </p>
+                                        <p><strong>Raça/Cor:</strong> {{ aluno.raca|default:"Não informado" }}</p>
+                                        <p><strong>NIS:</strong> {{ aluno.nis|default:"Não informado" }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4 class="border-bottom pb-2">Dados Escolares</h4>
+                                        <p><strong>Código INEP:</strong> {{ aluno.inep_aluno|default:"Não informado" }}</p>
+                                        <p><strong>Código INEP da Escola:</strong> {{ aluno.inep_escola|default:"Não informado" }}</p>
+                                        <p><strong>Turma:</strong> {{ aluno.turma|default:"Não informado" }}</p>
+                                        <p><strong>Série:</strong> {{ aluno.serie|default:"Não informado" }}</p>
+                                        <p><strong>Ano Letivo:</strong> {{ aluno.ano|default:"Não informado" }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <h4 class="border-bottom pb-2">Endereço</h4>
+                                        <p><strong>Logradouro:</strong> {{ aluno.logradouro|default:"Não informado" }}</p>
+                                        <p><strong>Bairro:</strong> {{ aluno.bairro|default:"Não informado" }}</p>
+                                        <p><strong>Cidade:</strong> {{ aluno.cidade|default:"Não informado" }}</p>
+                                        <p><strong>UF:</strong> {{ aluno.uf|default:"Não informado" }}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4 class="border-bottom pb-2">Responsáveis</h4>
+                                        <p><strong>Nome da Mãe:</strong> {{ aluno.nome_mae|default:"Não informado" }}</p>
+                                        <p><strong>Nome do Responsável:</strong> {{ aluno.nome_responsavel|default:"Não informado" }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-muted small">
+                                    <p><strong>Cadastrado em:</strong> {{ aluno.data_cadastro|date:"d/m/Y H:i" }}</p>
+                                    <p><strong>Última atualização:</strong> {{ aluno.ultima_atualizacao|date:"d/m/Y H:i" }}</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <tr>
+                    <td colspan="{{ colunas_selecionadas|length|add:1 }}" class="text-center">Nenhum aluno encontrado</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Paginação">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if genero_filter %}genero={{ genero_filter }}&{% endif %}{% if raca_filter %}raca={{ raca_filter }}&{% endif %}page=1">&laquo; Primeira</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if genero_filter %}genero={{ genero_filter }}&{% endif %}{% if raca_filter %}raca={{ raca_filter }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#">&laquo; Primeira</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#">Anterior</a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if genero_filter %}genero={{ genero_filter }}&{% endif %}{% if raca_filter %}raca={{ raca_filter }}&{% endif %}page={{ num }}">{{ num }}</a>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if genero_filter %}genero={{ genero_filter }}&{% endif %}{% if raca_filter %}raca={{ raca_filter }}&{% endif %}page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if genero_filter %}genero={{ genero_filter }}&{% endif %}{% if raca_filter %}raca={{ raca_filter }}&{% endif %}page={{ page_obj.next_page_number }}">Próxima</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if genero_filter %}genero={{ genero_filter }}&{% endif %}{% if raca_filter %}raca={{ raca_filter }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#">Próxima</a>
+            </li>
+            <li class="page-item disabled">
+                <a class="page-link" href="#">Última &raquo;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    <!-- Modal para filtros -->
+    <div class="modal fade" id="filtrosModal" tabindex="-1" aria-labelledby="filtrosModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="get">
+                    <!-- Manter o termo de busca atual se existir -->
+                    {% if query %}
+                    <input type="hidden" name="q" value="{{ query }}">
+                    {% endif %}
+                    
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title" id="filtrosModalLabel">
+                            <i class="bi bi-funnel me-2"></i>Filtrar Alunos
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="genero" class="form-label">Gênero</label>
+                            <select class="form-select" id="genero" name="genero">
+                                <option value="">Todos</option>
+                                {% for key, value in generos_disponiveis %}
+                                <option value="{{ key }}" {% if genero_filter == key %}selected{% endif %}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="raca" class="form-label">Raça/Cor</label>
+                            <select class="form-select" id="raca" name="raca">
+                                <option value="">Todos</option>
+                                {% for key, value in racas_disponiveis %}
+                                <option value="{{ key }}" {% if raca_filter == key %}selected{% endif %}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <a href="{% url 'importacao:aluno_list' %}{% if query %}?q={{ query }}{% endif %}" class="btn btn-outline-secondary">Limpar Filtros</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel me-1"></i>Aplicar Filtros
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para personalização de colunas -->
+    <div class="modal fade" id="colunasModal" tabindex="-1" aria-labelledby="colunasModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="salvar_colunas" value="1">
+                    
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title" id="colunasModalLabel">
+                            <i class="bi bi-layout-three-columns me-2"></i>Personalizar Colunas
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body">
+                        <p class="text-muted">Selecione as colunas que deseja exibir na listagem de alunos:</p>
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="nome" id="col_nome" 
+                                        {% if 'nome' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_nome">Nome</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="cpf" id="col_cpf"
+                                        {% if 'cpf' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_cpf">CPF</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="dt_nascimento" id="col_dt_nascimento"
+                                        {% if 'dt_nascimento' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_dt_nascimento">Data de Nascimento</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="genero" id="col_genero"
+                                        {% if 'genero' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_genero">Gênero</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="raca" id="col_raca"
+                                        {% if 'raca' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_raca">Raça/Cor</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="turma" id="col_turma"
+                                        {% if 'turma' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_turma">Turma</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="serie" id="col_serie"
+                                        {% if 'serie' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_serie">Série</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="ano" id="col_ano"
+                                        {% if 'ano' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_ano">Ano Letivo</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="cidade" id="col_cidade"
+                                        {% if 'cidade' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_cidade">Cidade</label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="colunas" value="uf" id="col_uf"
+                                        {% if 'uf' in colunas_selecionadas %}checked{% endif %}>
+                                    <label class="form-check-label" for="col_uf">UF</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Salvar Configuração
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Garantir que pelo menos uma coluna esteja selecionada
+    document.querySelector('form[name="salvar_colunas"]')?.addEventListener('submit', function(e) {
+        const checkboxes = document.querySelectorAll('input[name="colunas"]:checked');
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alert('Selecione pelo menos uma coluna para exibir.');
+        }
+    });
+</script>
+{% endblock %} 

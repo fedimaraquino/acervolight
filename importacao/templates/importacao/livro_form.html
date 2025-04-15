@@ -1,0 +1,300 @@
+{% extends 'importacao/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - {{ block.super }}{% endblock %}
+
+{% block header %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id_titulo" class="form-label">Título</label>
+                    {{ form.titulo }}
+                    {% if form.titulo.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.titulo.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="id_autor" class="form-label">Autor</label>
+                    {{ form.autor }}
+                    <small class="form-text text-muted">Ao digitar o autor, o código Cutter será sugerido automaticamente.</small>
+                    {% if form.autor.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.autor.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id_editora" class="form-label">Editora</label>
+                    {{ form.editora }}
+                    {% if form.editora.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.editora.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="id_ano_publicacao" class="form-label">Ano de Publicação</label>
+                    {{ form.ano_publicacao }}
+                    {% if form.ano_publicacao.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.ano_publicacao.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id_secao" class="form-label">Seção</label>
+                    <select id="id_secao" name="secao" class="form-select select2-remote" data-api-url="{% url 'importacao:api_search_secao' %}">
+                        <option value="">---------</option>
+                        {% if form.instance.secao %}
+                        <option value="{{ form.instance.secao.nome }}" selected>
+                            {{ form.instance.secao.nome }}
+                        </option>
+                        {% else %}
+                            {% for secao in secoes %}
+                            <option value="{{ secao.nome }}">{{ secao.nome }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    {% if form.secao.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.secao.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="id_cdd" class="form-label">CDD</label>
+                    <select id="id_cdd" name="cdd" class="form-select select2-remote" data-api-url="{% url 'importacao:api_search_cdd' %}">
+                        <option value="">---------</option>
+                        {% if form.instance.cdd %}
+                        <option value="{{ form.instance.cdd.id }}" selected>
+                            {{ form.instance.cdd.codigo }} - {{ form.instance.cdd.descricao }}
+                        </option>
+                        {% else %}
+                            {% for cdd in cdds %}
+                            <option value="{{ cdd.id }}">{{ cdd.codigo }} - {{ cdd.descricao }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    {% if form.cdd.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.cdd.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="id_cdu" class="form-label">CDU</label>
+                    <select id="id_cdu" name="cdu" class="form-select select2-remote" data-api-url="{% url 'importacao:api_search_cdu' %}">
+                        <option value="">---------</option>
+                        {% if form.instance.cdu %}
+                        <option value="{{ form.instance.cdu.id }}" selected>
+                            {{ form.instance.cdu.codigo }} - {{ form.instance.cdu.descricao }}
+                        </option>
+                        {% else %}
+                            {% for cdu in cdus %}
+                            <option value="{{ cdu.id }}">{{ cdu.codigo }} - {{ cdu.descricao }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    {% if form.cdu.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.cdu.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <label for="id_cutter" class="form-label">Cutter</label>
+                    <select id="id_cutter" name="cutter" class="form-select select2-remote" data-api-url="{% url 'importacao:api_search_cutter' %}">
+                        <option value="">---------</option>
+                        {% if form.instance.cutter %}
+                        <option value="{{ form.instance.cutter.id }}" selected>
+                            {% if form.instance.autor %}
+                                {{ form.instance.autor_sobrenome_inicial }}{{ form.instance.cutter.codigo }} - {{ form.instance.cutter.descricao }}
+                            {% else %}
+                                {{ form.instance.cutter.codigo }} - {{ form.instance.cutter.descricao }}
+                            {% endif %}
+                        </option>
+                        {% else %}
+                            {% for cutter in cutters %}
+                            <option value="{{ cutter.id }}">{{ cutter.codigo }} - {{ cutter.descricao }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <small class="form-text text-muted">Sugestões de Cutter baseadas no sobrenome do autor.</small>
+                    {% if form.cutter.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.cutter.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{% url 'importacao:livro_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para seleção de Cutter -->
+<div class="modal fade" id="cutterModal" tabindex="-1" aria-labelledby="cutterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cutterModalLabel">Selecione o Código Cutter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    O código Cutter é baseado no sobrenome do autor. Selecione o código apropriado abaixo:
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Descrição</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cutter-results">
+                        <!-- Resultados serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Inicializar Select2 para campos remotos
+        $('.select2-remote').each(function() {
+            var $select = $(this);
+            var apiUrl = $select.data('api-url');
+            
+            $select.select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Pesquisar...',
+                allowClear: true,
+                ajax: {
+                    url: apiUrl,
+                    dataType: 'json',
+                    delay: 300,
+                    data: function (params) {
+                        return {
+                            q: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 2
+            });
+        });
+        
+        // Função para extrair o sobrenome do autor
+        function extrairSobrenome(nomeCompleto) {
+            if (!nomeCompleto) return '';
+            var nomePartes = nomeCompleto.trim().split(' ');
+            // Retorna o último elemento do array (o sobrenome)
+            return nomePartes[nomePartes.length - 1];
+        }
+        
+        // Função para buscar sugestões de Cutter
+        function buscarCutter(sobrenome) {
+            if (!sobrenome) return;
+            
+            $.ajax({
+                url: "{% url 'importacao:api_gerar_cutter' %}",
+                data: {
+                    sobrenome: sobrenome
+                },
+                success: function(data) {
+                    var resultados = data.results;
+                    
+                    if (resultados.length > 0) {
+                        // Preencher a tabela com os resultados
+                        var html = '';
+                        $.each(resultados, function(i, item) {
+                            html += '<tr>';
+                            html += '<td>' + item.text.split(' - ')[0] + '</td>'; // Exibe a notação completa, incluindo a primeira letra do sobrenome
+                            html += '<td>' + item.descricao + '</td>';
+                            html += '<td><button type="button" class="btn btn-sm btn-primary select-cutter" data-id="' + item.id + '" data-text="' + item.text + '">Selecionar</button></td>';
+                            html += '</tr>';
+                        });
+                        
+                        $('#cutter-results').html(html);
+                        $('#cutterModal').modal('show');
+                        
+                        // Adicionar evento para os botões de seleção
+                        $('.select-cutter').click(function() {
+                            var id = $(this).data('id');
+                            var text = $(this).data('text');
+                            
+                            // Criar uma nova opção no select e selecioná-la
+                            var newOption = new Option(text, id, true, true);
+                            $('#id_cutter').empty().append(newOption).trigger('change');
+                            
+                            // Fechar o modal
+                            $('#cutterModal').modal('hide');
+                        });
+                    }
+                }
+            });
+        }
+        
+        // Evento quando o campo autor é modificado
+        var autorTimer;
+        $('#id_autor').on('input', function() {
+            clearTimeout(autorTimer);
+            autorTimer = setTimeout(function() {
+                var autor = $('#id_autor').val();
+                var sobrenome = extrairSobrenome(autor);
+                if (sobrenome.length > 1) {
+                    buscarCutter(sobrenome);
+                }
+            }, 800); // Delay para evitar múltiplas requisições durante a digitação
+        });
+        
+        // Para casos de seleção com tecla Tab ou clique fora do campo
+        $('#id_autor').on('blur', function() {
+            var autor = $(this).val();
+            var sobrenome = extrairSobrenome(autor);
+            if (sobrenome.length > 1) {
+                buscarCutter(sobrenome);
+            }
+        });
+    });
+</script>
+{% endblock %} 

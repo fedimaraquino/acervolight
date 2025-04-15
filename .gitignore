@@ -1,0 +1,68 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+# Virtualenv
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Frontend
+node_modules/
+coverage/
+.coverage
+htmlcov/
+
+# Outros
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+staticfiles/
+
+# Dados sensíveis e arquivos de planilha
+*.xls
+*.xlsx
+*.csv
+!secoes.xls
+!cdd.xls
+!cdu.xls
+!cutter.xls
+
+# Arquivos de cache
+.pytest_cache/
+.tox/ 
