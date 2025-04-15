@@ -131,6 +131,7 @@ Este projeto está licenciado sob a licença MIT - veja o arquivo [LICENSE](LICE
 
 Para dúvidas ou sugestões, entre em contato através das issues do GitHub ou por email.
 
+Poderá implemntar o emprestimo de livros para aluno, o sistema esta em constante atualização
 ---
 
 Desenvolvido com ❤️ para facilitar o gerenciamento de acervos escolares e bibliotecas comunitárias. 
