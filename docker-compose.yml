@@ -17,9 +17,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: acervolight
-      POSTGRES_USER: yourusername
-      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB=${POSTGRES_DB}
+      POSTGRES_USER=${POSTGRES_USER}
+      POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
 volumes:
   postgres_data: 
