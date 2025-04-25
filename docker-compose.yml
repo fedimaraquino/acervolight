@@ -8,8 +8,8 @@ services:
       - .:/app
       - static_volume:/app/static
       - media_volume:/app/media
-    expose:
-      - 8000
+    ports:
+      - "8080:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=biblioteca.settings
       - DJANGO_SECRET_KEY=django-insecure-sua-chave-secreta-aqui-123456
@@ -34,18 +34,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - static_volume:/app/static
-      - media_volume:/app/media
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - web
 
 volumes:
   postgres_data:
