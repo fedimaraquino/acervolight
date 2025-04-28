@@ -10,7 +10,7 @@ services:
       - "8080:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=biblioteca.settings
-      - DJANGO_SECRET_KEY=django-insecure-sua-chave-secreta-aqui-123456
+      - DJANGO_SECRET_KEY=hx_hdn@-@#0whm51+8#9$@w^%8e1-@6cgr937mz*+^i%rqox^a
       - DJANGO_DEBUG=False
       - DJANGO_ALLOWED_HOSTS=acervo.easistemas.dev.br
       - POSTGRES_DB=acervolight
