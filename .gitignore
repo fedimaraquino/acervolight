@@ -32,6 +32,7 @@ media
 # Virtualenv
 venv/
 ENV/
+.env
 
 # IDE
 .idea/
@@ -65,4 +66,9 @@ staticfiles/
 
 # Arquivos de cache
 .pytest_cache/
-.tox/ 
+.tox/
+
+# Backups
+/backups/
+*.sql
+*.sql.gz 
