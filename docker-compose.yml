@@ -37,7 +37,7 @@ services:
         createdb -U postgres acervolight
         pg_ctl stop
       fi
-      postgres
+      exec postgres
       "
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d acervolight"]
