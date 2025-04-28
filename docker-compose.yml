@@ -22,7 +22,7 @@ services:
   db:
     image: postgres:13
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=Fep09151@
     healthcheck:
@@ -32,12 +32,6 @@ services:
       retries: 5
 
 volumes:
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: /var/www/acervolight/postgres_data
-      o: bind
   static_volume:
     driver: local
     driver_opts:
