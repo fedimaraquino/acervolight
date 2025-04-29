@@ -6,6 +6,7 @@ services:
       - .:/app
       - static_volume:/app/static
       - media_volume:/app/media
+      - ./planilhas:/app/planilhas
     ports:
       - "8080:8000"
     environment:
