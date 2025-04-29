@@ -28,8 +28,8 @@ class Command(BaseCommand):
             
             for _, row in df_cdd.iterrows():
                 CDD.objects.get_or_create(
-                    codigo=row['codigo'],
-                    defaults={'descricao': row['descricao']}
+                    codigo=row['Código'],
+                    defaults={'descricao': row['Descrição']}
                 )
 
             # Importar CDU
@@ -39,8 +39,8 @@ class Command(BaseCommand):
             
             for _, row in df_cdu.iterrows():
                 CDU.objects.get_or_create(
-                    codigo=row['codigo'],
-                    defaults={'descricao': row['descricao']}
+                    codigo=row['Código'],
+                    defaults={'descricao': row['Descrição']}
                 )
 
             # Importar Cutter
@@ -50,8 +50,8 @@ class Command(BaseCommand):
             
             for _, row in df_cutter.iterrows():
                 Cutter.objects.get_or_create(
-                    codigo=row['codigo'],
-                    defaults={'descricao': row['descricao']}
+                    codigo=row['Código'],
+                    defaults={'descricao': row['Descrição']}
                 )
 
             self.stdout.write(self.style.SUCCESS('Importação concluída com sucesso!'))
