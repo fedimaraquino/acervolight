@@ -14,14 +14,26 @@ class Command(BaseCommand):
             # Importar Seções
             self.stdout.write('Importando seções...')
             df_secoes = pd.read_excel(os.path.join(planilhas_dir, 'secoes.xls'))
+            self.stdout.write(f'Colunas encontradas na planilha de seções: {df_secoes.columns.tolist()}')
+            
+            # Verificar se a coluna 'nome' existe
+            if 'nome' not in df_secoes.columns:
+                raise ValueError(f"Coluna 'nome' não encontrada. Colunas disponíveis: {df_secoes.columns.tolist()}")
+            
             for _, row in df_secoes.iterrows():
                 Secao.objects.get_or_create(
-                    nome=row['nome']
+                    nome=row['sessao']
                 )
 
             # Importar CDD
             self.stdout.write('Importando CDD...')
             df_cdd = pd.read_excel(os.path.join(planilhas_dir, 'cdd.xls'))
+            self.stdout.write(f'Colunas encontradas na planilha de CDD: {df_cdd.columns.tolist()}')
+            
+            # Verificar se as colunas necessárias existem
+            if 'codigo' not in df_cdd.columns or 'descricao' not in df_cdd.columns:
+                raise ValueError(f"Colunas necessárias não encontradas. Colunas disponíveis: {df_cdd.columns.tolist()}")
+            
             for _, row in df_cdd.iterrows():
                 CDD.objects.get_or_create(
                     codigo=row['codigo'],
@@ -31,6 +43,12 @@ class Command(BaseCommand):
             # Importar CDU
             self.stdout.write('Importando CDU...')
             df_cdu = pd.read_excel(os.path.join(planilhas_dir, 'cdu.xls'))
+            self.stdout.write(f'Colunas encontradas na planilha de CDU: {df_cdu.columns.tolist()}')
+            
+            # Verificar se as colunas necessárias existem
+            if 'codigo' not in df_cdu.columns or 'descricao' not in df_cdu.columns:
+                raise ValueError(f"Colunas necessárias não encontradas. Colunas disponíveis: {df_cdu.columns.tolist()}")
+            
             for _, row in df_cdu.iterrows():
                 CDU.objects.get_or_create(
                     codigo=row['codigo'],
@@ -40,6 +58,12 @@ class Command(BaseCommand):
             # Importar Cutter
             self.stdout.write('Importando Cutter...')
             df_cutter = pd.read_excel(os.path.join(planilhas_dir, 'cutter.xls'))
+            self.stdout.write(f'Colunas encontradas na planilha de Cutter: {df_cutter.columns.tolist()}')
+            
+            # Verificar se as colunas necessárias existem
+            if 'codigo' not in df_cutter.columns or 'descricao' not in df_cutter.columns:
+                raise ValueError(f"Colunas necessárias não encontradas. Colunas disponíveis: {df_cutter.columns.tolist()}")
+            
             for _, row in df_cutter.iterrows():
                 Cutter.objects.get_or_create(
                     codigo=row['codigo'],
@@ -49,4 +73,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Importação concluída com sucesso!'))
 
         except Exception as e:
-            self.stdout.write(self.style.ERROR(f'Erro durante a importação: {str(e)}')) 
+            self.stdout.write(self.style.ERROR(f'Erro durante a importação: {str(e)}'))
+            # Mostrar mais detalhes sobre o erro
+            import traceback
+            self.stdout.write(self.style.ERROR(traceback.format_exc())) 
