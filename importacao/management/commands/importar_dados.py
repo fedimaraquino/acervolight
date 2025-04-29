@@ -11,13 +11,21 @@ class Command(BaseCommand):
         planilhas_dir = os.path.join(os.getcwd(), 'planilhas')
         
         try:
+            # Limpar todas as tabelas antes de importar
+            Secao.objects.all().delete()
+            CDD.objects.all().delete()
+            CDU.objects.all().delete()
+            Cutter.objects.all().delete()
+            self.stdout.write('Tabelas limpas. Iniciando nova importação...')
+
             # Importar Seções
             self.stdout.write('Importando seções...')
             df_secoes = pd.read_excel(os.path.join(planilhas_dir, 'secoes.xls'))
             self.stdout.write(f'Colunas encontradas na planilha de seções: {df_secoes.columns.tolist()}')
+            self.stdout.write(f'Total de registros na planilha Seções: {len(df_secoes)}')
             
             for _, row in df_secoes.iterrows():
-                Secao.objects.get_or_create(
+                Secao.objects.create(
                     nome=row['sessao']
                 )
 
@@ -25,33 +33,36 @@ class Command(BaseCommand):
             self.stdout.write('Importando CDD...')
             df_cdd = pd.read_excel(os.path.join(planilhas_dir, 'cdd.xls'))
             self.stdout.write(f'Colunas encontradas na planilha de CDD: {df_cdd.columns.tolist()}')
+            self.stdout.write(f'Total de registros na planilha CDD: {len(df_cdd)}')
             
             for _, row in df_cdd.iterrows():
-                CDD.objects.get_or_create(
+                CDD.objects.create(
                     codigo=row['Código'],
-                    defaults={'descricao': row['Descrição']}
+                    descricao=row['Descrição']
                 )
 
             # Importar CDU
             self.stdout.write('Importando CDU...')
             df_cdu = pd.read_excel(os.path.join(planilhas_dir, 'cdu.xls'))
             self.stdout.write(f'Colunas encontradas na planilha de CDU: {df_cdu.columns.tolist()}')
+            self.stdout.write(f'Total de registros na planilha CDU: {len(df_cdu)}')
             
             for _, row in df_cdu.iterrows():
-                CDU.objects.get_or_create(
+                CDU.objects.create(
                     codigo=row['codigo'],
-                    defaults={'descricao': row['descricao']}
+                    descricao=row['descricao']
                 )
 
             # Importar Cutter
             self.stdout.write('Importando Cutter...')
             df_cutter = pd.read_excel(os.path.join(planilhas_dir, 'cutter.xls'))
             self.stdout.write(f'Colunas encontradas na planilha de Cutter: {df_cutter.columns.tolist()}')
+            self.stdout.write(f'Total de registros na planilha Cutter: {len(df_cutter)}')
             
             for _, row in df_cutter.iterrows():
-                Cutter.objects.get_or_create(
+                Cutter.objects.create(
                     codigo=row['codigo'],
-                    defaults={'descricao': row['descricao']}
+                    descricao=row['descricao']
                 )
 
             self.stdout.write(self.style.SUCCESS('Importação concluída com sucesso!'))
